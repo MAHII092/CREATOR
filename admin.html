@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — MS BUILDS Hospital Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030D1A;
+    --bg2: #061528;
+    --bg3: rgba(6,25,50,0.8);
+    --cyan: #00D4FF;
+    --blue: #3B82F6;
+    --purple: #A855F7;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --text: #F0F8FF;
+    --text2: #94B8D8;
+    --text3: #4A7A9B;
+    --border: rgba(0,212,255,0.12);
+    --grad: linear-gradient(135deg, #00D4FF, #3B82F6, #A855F7);
+    --fm: 'Tiro Devanagari Marathi', serif;
+    --fl: 'Space Grotesk', sans-serif;
+  }
+
+  * { margin:0;padding:0;box-sizing:border-box; }
+  body { background:var(--bg);color:var(--text);font-family:var(--fm);min-height:100vh;display:flex; }
+
+  body::before {
+    content:'';position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 10% 10%, rgba(0,212,255,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 90% 90%, rgba(168,85,247,0.05) 0%, transparent 60%);
+    pointer-events:none;z-index:0;
+  }
+
+  /* ===== LOGIN ===== */
+  #login-screen {
+    position:fixed;inset:0;
+    background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    z-index:9999;
+  }
+
+  .login-box {
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:48px 40px;
+    max-width:420px;
+    width:90%;
+    text-align:center;
+    backdrop-filter:blur(20px);
+    position:relative;overflow:hidden;
+  }
+
+  .login-box::before {
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--grad);
+  }
+
+  .login-box .logo-row {
+    display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px;
+  }
+
+  .login-box .logo-icon {
+    width:52px;height:52px;border-radius:14px;
+    background:linear-gradient(135deg,#00D4FF,#3B82F6);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;box-shadow:0 0 24px rgba(0,212,255,0.4);
+  }
+
+  .login-box h1 { font-family:var(--fl);font-size:22px;font-weight:700;color:#fff; }
+  .login-box .subtitle { font-family:var(--fl);font-size:12px;color:var(--cyan);letter-spacing:1px; }
+
+  .login-box h2 { font-family:var(--fm);font-size:1.4rem;margin-bottom:8px; }
+  .login-box p { font-size:0.9rem;color:var(--text2);margin-bottom:28px; }
+
+  .login-input {
+    width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);
+    border-radius:10px;padding:13px 16px;color:var(--text);
+    font-family:var(--fl);font-size:14px;margin-bottom:14px;
+    transition:all 0.2s;outline:none;
+  }
+
+  .login-input:focus { border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,0.08); }
+
+  .btn {
+    background:linear-gradient(135deg,var(--cyan),var(--blue));
+    color:#000;font-family:var(--fm);font-size:15px;font-weight:600;
+    padding:13px 28px;border:none;border-radius:10px;cursor:pointer;
+    transition:all 0.3s;box-shadow:0 0 24px rgba(0,212,255,0.25);
+    display:inline-block;text-decoration:none;
+  }
+  .btn:hover { transform:translateY(-2px);box-shadow:0 0 40px rgba(0,212,255,0.4); }
+  .btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
+
+  .btn-outline {
+    background:transparent;color:var(--text);border:1px solid var(--border);
+    font-family:var(--fm);font-size:14px;padding:10px 20px;border-radius:8px;
+    cursor:pointer;transition:all 0.2s;
+  }
+  .btn-outline:hover { border-color:var(--cyan);color:var(--cyan); }
+
+  .btn-danger {
+    background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;
+    border:none;font-family:var(--fm);font-size:13px;padding:8px 16px;
+    border-radius:8px;cursor:pointer;transition:all 0.2s;
+  }
+  .btn-danger:hover { opacity:0.85; }
+
+  .btn-sm {
+    font-size:12px;padding:7px 14px;border-radius:7px;
+  }
+
+  .btn-green {
+    background:linear-gradient(135deg,#22C55E,#16A34A);color:#fff;
+    border:none;font-family:var(--fm);font-size:13px;padding:8px 16px;
+    border-radius:8px;cursor:pointer;transition:all 0.2s;
+  }
+
+  /* ===== SIDEBAR ===== */
+  #sidebar {
+    width:250px;min-height:100vh;
+    background:rgba(3,13,26,0.95);
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    position:fixed;left:0;top:0;bottom:0;
+    z-index:100;
+    backdrop-filter:blur(10px);
+    transition:transform 0.3s;
+  }
+
+  .sidebar-logo {
+    padding:22px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:12px;
+  }
+
+  .sidebar-logo .logo-icon {
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,#00D4FF,#3B82F6);
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;box-shadow:0 0 16px rgba(0,212,255,0.3);
+    flex-shrink:0;
+  }
+
+  .sidebar-logo .logo-text { font-family:var(--fl);font-size:16px;font-weight:700;color:#fff; }
+  .sidebar-logo .logo-sub { font-family:var(--fl);font-size:10px;color:var(--cyan);letter-spacing:0.5px; }
+
+  .sidebar-nav { padding:12px 0;flex:1;overflow-y:auto; }
+
+  .nav-section-label {
+    padding:8px 20px 4px;
+    font-family:var(--fl);
+    font-size:10px;
+    color:var(--text3);
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+
+  .nav-item {
+    display:flex;align-items:center;gap:12px;
+    padding:11px 20px;
+    color:var(--text2);
+    cursor:pointer;
+    transition:all 0.2s;
+    font-family:var(--fm);
+    font-size:14px;
+    border-left:3px solid transparent;
+    text-decoration:none;
+  }
+
+  .nav-item:hover { color:var(--text);background:rgba(0,212,255,0.05);border-left-color:rgba(0,212,255,0.3); }
+  .nav-item.active { color:var(--cyan);background:rgba(0,212,255,0.08);border-left-color:var(--cyan); }
+  .nav-item .nav-icon { font-size:16px;flex-shrink:0; }
+
+  .sidebar-bottom {
+    padding:16px 20px;
+    border-top:1px solid var(--border);
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  #main {
+    margin-left:250px;
+    flex:1;
+    min-height:100vh;
+    position:relative;
+    z-index:1;
+  }
+
+  .topbar {
+    background:rgba(3,13,26,0.9);
+    border-bottom:1px solid var(--border);
+    padding:0 32px;
+    height:64px;
+    display:flex;align-items:center;justify-content:space-between;
+    backdrop-filter:blur(10px);
+    position:sticky;top:0;z-index:50;
+  }
+
+  .topbar h2 { font-family:var(--fm);font-size:1.3rem; }
+  .topbar-right { display:flex;align-items:center;gap:12px; }
+
+  /* ===== PANELS ===== */
+  .panel {
+    display:none;
+    padding:28px 32px;
+    max-width:1200px;
+  }
+
+  .panel.active { display:block; }
+
+  .panel-header { margin-bottom:28px; }
+  .panel-header h3 { font-family:var(--fm);font-size:1.5rem;margin-bottom:6px; }
+  .panel-header p { color:var(--text2);font-size:0.9rem; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:24px;
+    backdrop-filter:blur(15px);
+    margin-bottom:20px;
+    position:relative;overflow:hidden;
+  }
+
+  .card-title {
+    font-family:var(--fm);font-size:1rem;
+    color:var(--text);margin-bottom:18px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .stats-row {
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:14px;margin-bottom:24px;
+  }
+
+  .stat-box {
+    background:var(--bg3);border:1px solid var(--border);
+    border-radius:12px;padding:18px;text-align:center;
+    backdrop-filter:blur(10px);
+  }
+
+  .stat-box .num { font-family:var(--fl);font-size:1.8rem;font-weight:700; }
+  .stat-box .num.cyan { color:var(--cyan); }
+  .stat-box .num.blue { color:var(--blue); }
+  .stat-box .num.green { color:var(--green); }
+  .stat-box .num.yellow { color:var(--yellow); }
+  .stat-box .lbl { font-family:var(--fm);font-size:12px;color:var(--text2);margin-top:4px; }
+
+  /* ===== FORM ELEMENTS ===== */
+  .form-row { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px; }
+  .form-row.triple { grid-template-columns:1fr 1fr 1fr; }
+  .form-row.single { grid-template-columns:1fr; }
+
+  .field { display:flex;flex-direction:column;gap:6px; }
+  .field label { font-family:var(--fl);font-size:12px;color:var(--text2);letter-spacing:0.3px; }
+
+  .field input, .field select, .field textarea {
+    background:rgba(0,0,0,0.4);border:1px solid var(--border);
+    border-radius:8px;padding:10px 14px;color:var(--text);
+    font-family:var(--fm);font-size:14px;transition:all 0.2s;outline:none;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus {
+    border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,0.08);
+  }
+  .field input[type=color] { padding:4px 8px;height:40px;cursor:pointer; }
+  .field textarea { resize:vertical;min-height:80px; }
+  .field select option { background:#061528;color:var(--text); }
+
+  /* ===== CLIENT CARDS ===== */
+  .client-grid {
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:16px;
+  }
+
+  .client-card {
+    background:var(--bg3);border:1px solid var(--border);
+    border-radius:14px;padding:22px;
+    backdrop-filter:blur(10px);
+    transition:all 0.3s;
+  }
+
+  .client-card:hover { border-color:rgba(0,212,255,0.3);transform:translateY(-2px); }
+
+  .client-card-header {
+    display:flex;align-items:flex-start;justify-content:space-between;
+    margin-bottom:14px;
+  }
+
+  .client-card h4 { font-family:var(--fm);font-size:1.05rem;color:var(--text);margin-bottom:2px; }
+  .client-slug { font-family:var(--fl);font-size:11px;color:var(--cyan); }
+  .client-card p { font-size:0.82rem;color:var(--text2);margin-bottom:14px;line-height:1.5; }
+
+  .client-card-actions { display:flex;gap:8px;flex-wrap:wrap; }
+
+  /* ===== LIST ITEMS ===== */
+  .list-item {
+    background:rgba(0,0,0,0.2);border:1px solid var(--border);
+    border-radius:10px;padding:14px 16px;
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:8px;transition:all 0.2s;
+  }
+
+  .list-item:hover { border-color:rgba(0,212,255,0.2); }
+  .list-item .item-icon { font-size:20px;flex-shrink:0; }
+  .list-item .item-info { flex:1; }
+  .list-item .item-name { font-family:var(--fm);font-size:0.95rem;color:var(--text); }
+  .list-item .item-sub { font-size:0.8rem;color:var(--text2);margin-top:2px; }
+  .list-item .item-actions { display:flex;gap:6px; }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x:auto; }
+
+  table { width:100%;border-collapse:collapse; }
+  th {
+    font-family:var(--fl);font-size:11px;text-transform:uppercase;letter-spacing:0.8px;
+    color:var(--text3);padding:10px 14px;border-bottom:1px solid var(--border);
+    text-align:left;
+  }
+  td {
+    font-family:var(--fm);font-size:13px;color:var(--text2);
+    padding:12px 14px;border-bottom:1px solid rgba(0,212,255,0.05);
+    vertical-align:middle;
+  }
+  tr:hover td { background:rgba(0,212,255,0.03); }
+  td .name-cell { color:var(--text);font-weight:500; }
+
+  .badge {
+    display:inline-block;padding:3px 10px;border-radius:50px;
+    font-family:var(--fl);font-size:10px;
+  }
+  .badge.cyan { background:rgba(0,212,255,0.1);color:var(--cyan);border:1px solid rgba(0,212,255,0.2); }
+  .badge.green { background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2); }
+  .badge.yellow { background:rgba(245,158,11,0.1);color:var(--yellow);border:1px solid rgba(245,158,11,0.2); }
+
+  /* ===== PREVIEW LINK ===== */
+  .preview-link-box {
+    background:rgba(0,212,255,0.06);
+    border:1px solid rgba(0,212,255,0.2);
+    border-radius:10px;padding:14px 18px;
+    display:flex;align-items:center;gap:12px;
+    margin-top:14px;
+  }
+
+  .preview-link-box input {
+    flex:1;background:transparent;border:none;
+    color:var(--cyan);font-family:var(--fl);font-size:13px;outline:none;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+    z-index:5000;align-items:center;justify-content:center;
+    padding:20px;
+  }
+
+  .modal-overlay.open { display:flex; }
+
+  .modal {
+    background:var(--bg2);border:1px solid var(--border);
+    border-radius:20px;padding:32px;max-width:600px;width:100%;
+    max-height:90vh;overflow-y:auto;position:relative;
+  }
+
+  .modal-header {
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;
+  }
+
+  .modal-header h3 { font-family:var(--fm);font-size:1.2rem; }
+  .modal-close {
+    background:rgba(255,255,255,0.05);border:1px solid var(--border);
+    color:var(--text2);width:32px;height:32px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:18px;transition:all 0.2s;
+  }
+  .modal-close:hover { background:rgba(239,68,68,0.1);color:var(--red); }
+
+  /* ===== COLOR PICKERS ===== */
+  .color-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:14px; }
+
+  /* ===== ALERTS ===== */
+  .alert {
+    padding:12px 18px;border-radius:10px;margin-bottom:16px;
+    font-family:var(--fm);font-size:14px;display:none;
+  }
+  .alert.success { background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:var(--green); }
+  .alert.error { background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--red); }
+  .alert.show { display:block; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:768px) {
+    #sidebar { transform:translateX(-100%); }
+    #sidebar.open { transform:translateX(0); }
+    #main { margin-left:0; }
+    .panel { padding:20px 16px; }
+    .form-row { grid-template-columns:1fr; }
+    .form-row.triple { grid-template-columns:1fr; }
+    .topbar { padding:0 16px; }
+  }
+
+  /* ===== MOBILE MENU BTN ===== */
+  .menu-toggle {
+    display:none;background:none;border:1px solid var(--border);
+    color:var(--text2);padding:8px 10px;border-radius:8px;cursor:pointer;
+    font-size:16px;
+  }
+
+  @media (max-width:768px) { .menu-toggle { display:block; } }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="logo-row">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MS BUILDS</div>
+        <div class="logo-sub">HOSPITAL BUILDER</div>
+      </div>
+    </div>
+    <h2>Admin Panel</h2>
+    <p>आपले credentials टाका</p>
+    <input class="login-input" type="text" id="login-user" placeholder="Username">
+    <input class="login-input" type="password" id="login-pass" placeholder="Password" onkeydown="if(event.key==='Enter') doLogin()">
+    <div id="login-error" style="color:#EF4444;font-size:13px;margin-bottom:12px;display:none;">चुकीचे credentials!</div>
+    <button class="btn" style="width:100%;margin-top:6px;" onclick="doLogin()">लॉगिन करा →</button>
+    <p style="margin-top:16px;font-size:11px;color:var(--text3);">Default: admin / admin123</p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🏥</div>
+    <div>
+      <div class="logo-text" style="font-family:var(--fl);font-size:15px;font-weight:700;color:#fff;">MS BUILDS</div>
+      <div class="logo-sub" style="font-family:var(--fl);font-size:10px;color:var(--cyan);letter-spacing:0.5px;">HOSPITAL BUILDER</div>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-section-label">मुख्य</div>
+    <div class="nav-item active" onclick="showPanel('dashboard')" data-panel="dashboard">
+      <span class="nav-icon">📊</span> डॅशबोर्ड
+    </div>
+    <div class="nav-item" onclick="showPanel('clients')" data-panel="clients">
+      <span class="nav-icon">🏥</span> रुग्णालये / Clients
+    </div>
+    <div class="nav-item" onclick="showPanel('appointments')" data-panel="appointments">
+      <span class="nav-icon">📅</span> अपॉइंटमेंट्स
+    </div>
+
+    <div class="nav-section-label" style="margin-top:12px;">Client संपादन</div>
+    <div class="nav-item" onclick="showPanel('edit-settings')" data-panel="edit-settings">
+      <span class="nav-icon">⚙️</span> मूलभूत माहिती
+    </div>
+    <div class="nav-item" onclick="showPanel('edit-colors')" data-panel="edit-colors">
+      <span class="nav-icon">🎨</span> रंग / Colors
+    </div>
+    <div class="nav-item" onclick="showPanel('edit-services')" data-panel="edit-services">
+      <span class="nav-icon">🩺</span> सेवा व विभाग
+    </div>
+    <div class="nav-item" onclick="showPanel('edit-doctors')" data-panel="edit-doctors">
+      <span class="nav-icon">👨‍⚕️</span> डॉक्टर्स
+    </div>
+    <div class="nav-item" onclick="showPanel('edit-facilities')" data-panel="edit-facilities">
+      <span class="nav-icon">🏗️</span> सुविधा
+    </div>
+    <div class="nav-item" onclick="showPanel('edit-stats')" data-panel="edit-stats">
+      <span class="nav-icon">📈</span> Stats
+    </div>
+    <div class="nav-item" onclick="showPanel('integration')" data-panel="integration">
+      <span class="nav-icon">🔗</span> Google Sheet
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <button class="btn-outline" style="width:100%;font-size:13px;" onclick="doLogout()">🚪 लॉगआउट</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <h2 id="panel-title">डॅशबोर्ड</h2>
+    </div>
+    <div class="topbar-right">
+      <div style="font-family:var(--fl);font-size:12px;color:var(--text2);">
+        Client: <span id="current-client-label" style="color:var(--cyan);">default</span>
+      </div>
+      <select id="client-switcher" onchange="switchClient(this.value)"
+        style="background:rgba(0,0,0,0.4);border:1px solid var(--border);color:var(--text);
+               padding:7px 12px;border-radius:8px;font-family:var(--fl);font-size:12px;outline:none;">
+      </select>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="panel-header">
+      <h3>📊 डॅशबोर्ड</h3>
+      <p>सर्व clients आणि अपॉइंटमेंट्सचा आढावा</p>
+    </div>
+    <div class="stats-row" id="dash-stats"></div>
+    <div class="card">
+      <div class="card-title">🏥 माझे Clients</div>
+      <div id="dash-clients"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 ताज्या अपॉइंटमेंट्स</div>
+      <div class="table-wrap">
+        <table id="dash-appt-table">
+          <thead><tr>
+            <th>नाव</th><th>मोबाइल</th><th>विभाग</th><th>तारीख</th><th>Client</th><th>वेळ</th>
+          </tr></thead>
+          <tbody id="dash-appt-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="panel" id="panel-clients">
+    <div class="panel-header">
+      <h3>🏥 रुग्णालये / Clients</h3>
+      <p>नवीन client बनवा किंवा विद्यमान edit करा</p>
+    </div>
+    <button class="btn" onclick="openNewClientModal()" style="margin-bottom:20px;">+ नवीन रुग्णालय बनवा</button>
+    <div class="client-grid" id="clients-grid"></div>
+  </div>
+
+  <!-- APPOINTMENTS -->
+  <div class="panel" id="panel-appointments">
+    <div class="panel-header">
+      <h3>📅 अपॉइंटमेंट्स</h3>
+      <p id="appt-panel-subtitle">अपॉइंटमेंट डेटा पाहा व डाउनलोड करा</p>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <select id="appt-client-filter" onchange="loadAppointments()"
+        style="background:rgba(0,0,0,0.4);border:1px solid var(--border);color:var(--text);
+               padding:8px 14px;border-radius:8px;font-family:var(--fl);font-size:13px;outline:none;">
+      </select>
+      <button class="btn-outline btn-sm" onclick="exportCSV()">⬇ CSV Export</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>नाव</th><th>मोबाइल</th><th>ईमेल</th><th>वय</th><th>लिंग</th>
+            <th>विभाग</th><th>डॉक्टर</th><th>तारीख</th><th>वेळ</th><th>संदेश</th>
+          </tr></thead>
+          <tbody id="appt-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT SETTINGS -->
+  <div class="panel" id="panel-edit-settings">
+    <div class="panel-header">
+      <h3>⚙️ मूलभूत माहिती संपादन</h3>
+      <p>रुग्णालयाची मूलभूत माहिती बदला</p>
+    </div>
+    <div class="alert success" id="settings-saved-alert">✓ माहिती सेव्ह झाली!</div>
+    <div class="card">
+      <div class="form-row">
+        <div class="field"><label>रुग्णालयाचे नाव *</label><input id="s-name" placeholder="रुग्णालयाचे नाव"></div>
+        <div class="field"><label>Tagline</label><input id="s-tagline" placeholder="उदा: आरोग्य सेवा केंद्र"></div>
+      </div>
+      <div class="form-row single">
+        <div class="field"><label>वर्णन</label><textarea id="s-desc" rows="3" placeholder="रुग्णालयाचे वर्णन..."></textarea></div>
+      </div>
+      <div class="form-row single">
+        <div class="field"><label>पत्ता</label><input id="s-address" placeholder="संपूर्ण पत्ता"></div>
+      </div>
+      <div class="form-row triple">
+        <div class="field"><label>फोन</label><input id="s-phone" placeholder="फोन नंबर"></div>
+        <div class="field"><label>आपत्कालीन नंबर</label><input id="s-emergency" placeholder="उदा: १०८"></div>
+        <div class="field"><label>ईमेल</label><input id="s-email" placeholder="email@example.com" type="email"></div>
+      </div>
+      <div class="form-row single">
+        <div class="field"><label>वेळापत्रक / Timings</label><input id="s-timings" placeholder="उदा: सोमवार - शनिवार: ९:०० ते ९:००"></div>
+      </div>
+      <button class="btn" onclick="saveSettings()" style="margin-top:8px;">💾 सेव्ह करा</button>
+    </div>
+  </div>
+
+  <!-- EDIT COLORS -->
+  <div class="panel" id="panel-edit-colors">
+    <div class="panel-header">
+      <h3>🎨 रंग बदला</h3>
+      <p>website चे theme colors customize करा</p>
+    </div>
+    <div class="alert success" id="colors-saved-alert">✓ रंग सेव्ह झाले!</div>
+    <div class="card">
+      <div class="color-grid">
+        <div class="field"><label>Accent Cyan (मुख्य रंग)</label><input type="color" id="c-cyan" value="#00D4FF"></div>
+        <div class="field"><label>Accent Blue</label><input type="color" id="c-blue" value="#3B82F6"></div>
+        <div class="field"><label>Accent Purple</label><input type="color" id="c-purple" value="#A855F7"></div>
+        <div class="field"><label>Background (Dark)</label><input type="color" id="c-bg" value="#020B18"></div>
+      </div>
+      <button class="btn" onclick="saveColors()" style="margin-top:16px;">💾 रंग सेव्ह करा</button>
+      <button class="btn-outline" onclick="resetColors()" style="margin-left:10px;margin-top:16px;">↺ Reset</button>
+    </div>
+    <div class="card">
+      <div class="card-title">👁 Preview</div>
+      <div id="color-preview" style="padding:20px;border-radius:12px;text-align:center;">
+        <p style="font-size:1.1rem;margin-bottom:10px;">रंग Preview</p>
+        <div id="preview-btn" style="display:inline-block;padding:12px 24px;border-radius:10px;color:#000;font-weight:600;">बटण</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT SERVICES -->
+  <div class="panel" id="panel-edit-services">
+    <div class="panel-header">
+      <h3>🩺 सेवा व विभाग</h3>
+      <p>सेवा आणि विभाग जोडा / संपादित करा</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;" class="services-depts-grid">
+      <div class="card">
+        <div class="card-title">🩺 विशेष सेवा</div>
+        <div id="services-list"></div>
+        <button class="btn-green btn-sm" onclick="openModal('modal-add-service')" style="margin-top:10px;">+ सेवा जोडा</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🏢 विभाग</div>
+        <div id="depts-list"></div>
+        <button class="btn-green btn-sm" onclick="openModal('modal-add-dept')" style="margin-top:10px;">+ विभाग जोडा</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT DOCTORS -->
+  <div class="panel" id="panel-edit-doctors">
+    <div class="panel-header">
+      <h3>👨‍⚕️ डॉक्टर्स</h3>
+      <p>डॉक्टर्सची माहिती जोडा / संपादित करा</p>
+    </div>
+    <button class="btn" onclick="openModal('modal-add-doctor')" style="margin-bottom:16px;">+ डॉक्टर जोडा</button>
+    <div id="doctors-admin-list"></div>
+  </div>
+
+  <!-- EDIT FACILITIES -->
+  <div class="panel" id="panel-edit-facilities">
+    <div class="panel-header">
+      <h3>🏗️ सुविधा</h3>
+      <p>रुग्णालय सुविधा जोडा / संपादित करा</p>
+    </div>
+    <button class="btn" onclick="openModal('modal-add-facility')" style="margin-bottom:16px;">+ सुविधा जोडा</button>
+    <div id="facilities-admin-list"></div>
+  </div>
+
+  <!-- EDIT STATS -->
+  <div class="panel" id="panel-edit-stats">
+    <div class="panel-header">
+      <h3>📈 Hero Stats</h3>
+      <p>Hero section मधील statistics संपादित करा</p>
+    </div>
+    <div class="alert success" id="stats-saved-alert">✓ Stats सेव्ह झाले!</div>
+    <div class="card">
+      <div id="stats-edit-form"></div>
+      <button class="btn" onclick="saveStats()" style="margin-top:16px;">💾 सेव्ह करा</button>
+    </div>
+  </div>
+
+  <!-- GOOGLE SHEET INTEGRATION -->
+  <div class="panel" id="panel-integration">
+    <div class="panel-header">
+      <h3>🔗 Google Sheet Integration</h3>
+      <p>अपॉइंटमेंट Google Sheet मध्ये पाठवा</p>
+    </div>
+    <div class="alert success" id="webhook-saved-alert">✓ Webhook URL सेव्ह झाला!</div>
+    <div class="card">
+      <div class="card-title">📋 Setup Instructions</div>
+      <ol style="color:var(--text2);font-size:0.9rem;line-height:2;padding-left:20px;">
+        <li>Google Sheets मध्ये नवीन spreadsheet बनवा</li>
+        <li>Tools → Script Editor उघडा</li>
+        <li>खालील Apps Script code पेस्ट करा</li>
+        <li>Deploy → New Deployment → Web App म्हणून publish करा</li>
+        <li>Generated URL इथे paste करा</li>
+      </ol>
+      <div style="background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px;font-family:monospace;font-size:12px;color:#94B8D8;overflow-x:auto;">
+<pre>function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['नाव','मोबाइल','ईमेल','वय','लिंग',
+      'विभाग','डॉक्टर','तारीख','वेळ','संदेश','वेळ_नोंद','Client']);
+  }
+  
+  sheet.appendRow([
+    data['नाव'] || '', data['मोबाइल'] || '',
+    data['ईमेल'] || '', data['वय'] || '',
+    data['लिंग'] || '', data['विभाग'] || '',
+    data['डॉक्टर'] || '', data['तारीख'] || '',
+    data['वेळ'] || '', data['संदेश'] || '',
+    data['वेळ_नोंद'] || '', data['client'] || ''
+  ]);
+  
+  return ContentService.createTextOutput('OK');
+}</pre>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔗 Webhook URL</div>
+      <div class="field" style="margin-bottom:16px;">
+        <label>Google Apps Script Web App URL</label>
+        <input id="webhook-url" type="url" placeholder="https://script.google.com/macros/s/...">
+      </div>
+      <button class="btn" onclick="saveWebhook()">💾 URL सेव्ह करा</button>
+      <button class="btn-outline" onclick="testWebhook()" style="margin-left:10px;">🧪 Test करा</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- New Client Modal -->
+<div class="modal-overlay" id="modal-new-client">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🏥 नवीन रुग्णालय बनवा</h3>
+      <div class="modal-close" onclick="closeModal('modal-new-client')">×</div>
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label>रुग्णालयाचे नाव *</label>
+      <input id="new-client-name" placeholder="उदा: श्री गणेश रुग्णालय">
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label>Slug (URL ID) *</label>
+      <input id="new-client-slug" placeholder="उदा: shri-ganesh" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+      <span style="font-size:11px;color:var(--text3);margin-top:4px;display:block;">फक्त lowercase letters, numbers, hyphens allowed</span>
+    </div>
+    <div class="field" style="margin-bottom:20px;">
+      <label>Tagline</label>
+      <input id="new-client-tagline" placeholder="उदा: आरोग्य सेवा केंद्र">
+    </div>
+    <button class="btn" onclick="createNewClient()" style="width:100%;">✅ रुग्णालय बनवा</button>
+  </div>
+</div>
+
+<!-- Add Service Modal -->
+<div class="modal-overlay" id="modal-add-service">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🩺 नवीन सेवा जोडा</h3>
+      <div class="modal-close" onclick="closeModal('modal-add-service')">×</div>
+    </div>
+    <div class="field" style="margin-bottom:14px;"><label>Icon (Emoji)</label><input id="svc-icon" placeholder="उदा: ❤️" maxlength="4"></div>
+    <div class="field" style="margin-bottom:14px;"><label>सेवेचे नाव *</label><input id="svc-title" placeholder="उदा: हृदयरोग उपचार"></div>
+    <div class="field" style="margin-bottom:20px;"><label>वर्णन</label><textarea id="svc-desc" placeholder="सेवेचे वर्णन..."></textarea></div>
+    <button class="btn" onclick="addService()" style="width:100%;">+ जोडा</button>
+  </div>
+</div>
+
+<!-- Add Dept Modal -->
+<div class="modal-overlay" id="modal-add-dept">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🏢 नवीन विभाग जोडा</h3>
+      <div class="modal-close" onclick="closeModal('modal-add-dept')">×</div>
+    </div>
+    <div class="field" style="margin-bottom:14px;"><label>Icon (Emoji)</label><input id="dept-icon" placeholder="उदा: 🦴" maxlength="4"></div>
+    <div class="field" style="margin-bottom:20px;"><label>विभागाचे नाव *</label><input id="dept-name" placeholder="उदा: अस्थिरोग विभाग"></div>
+    <button class="btn" onclick="addDept()" style="width:100%;">+ जोडा</button>
+  </div>
+</div>
+
+<!-- Add Doctor Modal -->
+<div class="modal-overlay" id="modal-add-doctor">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>👨‍⚕️ नवीन डॉक्टर जोडा</h3>
+      <div class="modal-close" onclick="closeModal('modal-add-doctor')">×</div>
+    </div>
+    <div class="field" style="margin-bottom:14px;"><label>Avatar Emoji</label><input id="doc-emoji" placeholder="उदा: 👨‍⚕️" maxlength="8"></div>
+    <div class="field" style="margin-bottom:14px;"><label>डॉक्टरचे नाव *</label><input id="doc-name" placeholder="उदा: डॉ. राजेश पाटील"></div>
+    <div class="field" style="margin-bottom:14px;"><label>विभाग *</label><input id="doc-dept" placeholder="उदा: हृदयरोग विभाग"></div>
+    <div class="field" style="margin-bottom:20px;"><label>अनुभव</label><input id="doc-exp" placeholder="उदा: १५ वर्षांचा अनुभव"></div>
+    <button class="btn" onclick="addDoctor()" style="width:100%;">+ जोडा</button>
+  </div>
+</div>
+
+<!-- Add Facility Modal -->
+<div class="modal-overlay" id="modal-add-facility">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🏗️ नवीन सुविधा जोडा</h3>
+      <div class="modal-close" onclick="closeModal('modal-add-facility')">×</div>
+    </div>
+    <div class="field" style="margin-bottom:14px;"><label>Icon (Emoji)</label><input id="fac-icon" placeholder="उदा: 🚑" maxlength="4"></div>
+    <div class="field" style="margin-bottom:14px;"><label>सुविधेचे नाव *</label><input id="fac-title" placeholder="उदा: रुग्णवाहिका सेवा"></div>
+    <div class="field" style="margin-bottom:20px;"><label>वर्णन</label><textarea id="fac-desc" placeholder="सुविधेचे वर्णन..."></textarea></div>
+    <button class="btn" onclick="addFacility()" style="width:100%;">+ जोडा</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+// ============================================================
+// ADMIN AUTHENTICATION
+// ============================================================
+const ADMIN_CREDS = { username: 'admin', password: 'admin123' };
+let isLoggedIn = false;
+let currentSlug = 'default';
+
+function doLogin() {
+  const u = document.getElementById('login-user').value;
+  const p = document.getElementById('login-pass').value;
+  if (u === ADMIN_CREDS.username && p === ADMIN_CREDS.password) {
+    isLoggedIn = true;
+    document.getElementById('login-screen').style.display = 'none';
+    initAdmin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  isLoggedIn = false;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ============================================================
+// PANEL NAVIGATION
+// ============================================================
+const panelTitles = {
+  dashboard: '📊 डॅशबोर्ड',
+  clients: '🏥 रुग्णालये / Clients',
+  appointments: '📅 अपॉइंटमेंट्स',
+  'edit-settings': '⚙️ मूलभूत माहिती',
+  'edit-colors': '🎨 रंग बदला',
+  'edit-services': '🩺 सेवा व विभाग',
+  'edit-doctors': '👨‍⚕️ डॉक्टर्स',
+  'edit-facilities': '🏗️ सुविधा',
+  'edit-stats': '📈 Stats',
+  integration: '🔗 Google Sheet'
+};
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelector(`[data-panel="${name}"]`).classList.add('active');
+  document.getElementById('panel-title').textContent = panelTitles[name] || name;
+
+  // Load panel data
+  if (name === 'dashboard') loadDashboard();
+  else if (name === 'clients') loadClientsList();
+  else if (name === 'appointments') loadAppointments();
+  else if (name === 'edit-settings') loadSettingsForm();
+  else if (name === 'edit-colors') loadColorsForm();
+  else if (name === 'edit-services') loadServicesForm();
+  else if (name === 'edit-doctors') loadDoctorsForm();
+  else if (name === 'edit-facilities') loadFacilitiesForm();
+  else if (name === 'edit-stats') loadStatsForm();
+  else if (name === 'integration') loadIntegration();
+
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAdmin() {
+  // Ensure default client
+  const clients = getAllClients();
+  if (!clients['default']) {
+    clients['default'] = JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+    saveAllClients(clients);
+  }
+
+  currentSlug = 'default';
+  refreshClientSwitcher();
+  loadDashboard();
+}
+
+function refreshClientSwitcher() {
+  const sw = document.getElementById('client-switcher');
+  const apptFilter = document.getElementById('appt-client-filter');
+  const clients = getAllClients();
+  const slugs = Object.keys(clients);
+
+  sw.innerHTML = slugs.map(s =>
+    `<option value="${s}" ${s === currentSlug ? 'selected' : ''}>${clients[s].settings.hospitalName}</option>`
+  ).join('');
+
+  if (apptFilter) {
+    apptFilter.innerHTML = '<option value="all">सर्व Clients</option>' +
+      slugs.map(s => `<option value="${s}">${clients[s].settings.hospitalName}</option>`).join('');
+  }
+
+  document.getElementById('current-client-label').textContent = currentSlug;
+}
+
+function switchClient(slug) {
+  currentSlug = slug;
+  document.getElementById('current-client-label').textContent = slug;
+  const activePanel = document.querySelector('.panel.active');
+  if (activePanel) showPanel(activePanel.id.replace('panel-', ''));
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function loadDashboard() {
+  const clients = getAllClients();
+  const slugs = Object.keys(clients);
+  let totalAppts = 0;
+
+  slugs.forEach(s => {
+    totalAppts += getAppointments(s).length;
+  });
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-box"><div class="num cyan">${slugs.length}</div><div class="lbl">एकूण Clients</div></div>
+    <div class="stat-box"><div class="num blue">${totalAppts}</div><div class="lbl">एकूण अपॉइंटमेंट्स</div></div>
+    <div class="stat-box"><div class="num green">${getAppointments(currentSlug).length}</div><div class="lbl">सध्याच्या Client च्या</div></div>
+    <div class="stat-box"><div class="num yellow">${getAppointments(currentSlug).filter(a => a.तारीख >= new Date().toISOString().split('T')[0]).length}</div><div class="lbl">आगामी अपॉइंटमेंट्स</div></div>
+  `;
+
+  // Quick clients
+  document.getElementById('dash-clients').innerHTML = slugs.map(s => {
+    const c = clients[s];
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">
+        <div>
+          <div style="font-family:var(--fm);font-size:1rem;">${c.settings.hospitalName}</div>
+          <div style="font-size:11px;color:var(--cyan);font-family:var(--fl);">/${s}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="badge cyan">${getAppointments(s).length} अपॉइंटमेंट्स</span>
+          <button class="btn-outline btn-sm" onclick="openPreview('${s}')">👁 Preview</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Recent appointments
+  let allAppts = [];
+  slugs.forEach(s => {
+    getAppointments(s).forEach(a => allAppts.push({ ...a, _slug: s }));
+  });
+  allAppts.sort((a, b) => b.id - a.id);
+  allAppts = allAppts.slice(0, 10);
+
+  document.getElementById('dash-appt-body').innerHTML = allAppts.map(a => `
+    <tr>
+      <td><span class="name-cell">${a.नाव || '-'}</span></td>
+      <td>${a.मोबाइल || '-'}</td>
+      <td><span class="badge cyan">${a.विभाग || '-'}</span></td>
+      <td>${a.तारीख || '-'}</td>
+      <td><span class="badge green">${a._slug}</span></td>
+      <td style="font-size:11px;color:var(--text3);">${a.वेळ_नोंद || '-'}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;">अजून कोणत्याही अपॉइंटमेंट्स नाहीत</td></tr>';
+}
+
+// ============================================================
+// CLIENTS LIST
+// ============================================================
+function loadClientsList() {
+  const clients = getAllClients();
+  const grid = document.getElementById('clients-grid');
+  grid.innerHTML = Object.entries(clients).map(([slug, c]) => `
+    <div class="client-card">
+      <div class="client-card-header">
+        <div>
+          <h4>${c.settings.hospitalName}</h4>
+          <div class="client-slug">/${slug}</div>
+        </div>
+        <span style="font-size:22px;">🏥</span>
+      </div>
+      <p>${c.settings.tagline || ''}</p>
+      <div class="preview-link-box">
+        <input type="text" value="${window.location.origin}/index.html?hospital=${slug}" readonly>
+        <button class="btn-outline btn-sm" onclick="copyLink('${slug}')">📋</button>
+      </div>
+      <div class="client-card-actions" style="margin-top:14px;">
+        <button class="btn btn-sm" onclick="switchClient('${slug}');showPanel('edit-settings')">✏️ संपादन</button>
+        <button class="btn-outline btn-sm" onclick="openPreview('${slug}')">👁 Preview</button>
+        ${slug !== 'default' ? `<button class="btn-danger btn-sm" onclick="deleteClient('${slug}')">🗑</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openNewClientModal() { openModal('modal-new-client'); }
+
+function createNewClient() {
+  const name = document.getElementById('new-client-name').value.trim();
+  const slug = document.getElementById('new-client-slug').value.trim();
+  const tagline = document.getElementById('new-client-tagline').value.trim();
+
+  if (!name || !slug) return alert('नाव आणि slug आवश्यक आहे!');
+
+  const clients = getAllClients();
+  if (clients[slug]) return alert(`"${slug}" हा slug आधीच वापरला आहे!`);
+
+  const newClient = JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  newClient.slug = slug;
+  newClient.settings.hospitalName = name;
+  newClient.settings.tagline = tagline || 'आरोग्य सेवा केंद्र';
+  saveClient(slug, newClient);
+
+  closeModal('modal-new-client');
+  document.getElementById('new-client-name').value = '';
+  document.getElementById('new-client-slug').value = '';
+  refreshClientSwitcher();
+  loadClientsList();
+  alert(`✅ "${name}" यशस्वीरित्या बनवले!\nPreview: index.html?hospital=${slug}`);
+}
+
+function deleteClient(slug) {
+  if (!confirm(`"${slug}" हे रुग्णालय delete करायचे आहे का?`)) return;
+  const clients = getAllClients();
+  delete clients[slug];
+  saveAllClients(clients);
+  if (currentSlug === slug) { currentSlug = 'default'; }
+  refreshClientSwitcher();
+  loadClientsList();
+}
+
+function copyLink(slug) {
+  const url = `${window.location.origin}${window.location.pathname.replace('admin.html','index.html')}?hospital=${slug}`;
+  navigator.clipboard.writeText(url).then(() => alert('Link copied!')).catch(() => {
+    prompt('Copy this link:', url);
+  });
+}
+
+function openPreview(slug) {
+  window.open(`index.html?hospital=${slug}`, '_blank');
+}
+
+// ============================================================
+// APPOINTMENTS
+// ============================================================
+function loadAppointments() {
+  const filter = document.getElementById('appt-client-filter')?.value || 'all';
+  const clients = getAllClients();
+  let appts = [];
+
+  if (filter === 'all') {
+    Object.keys(clients).forEach(s => {
+      getAppointments(s).forEach(a => appts.push({ ...a, _slug: s }));
+    });
+  } else {
+    appts = getAppointments(filter).map(a => ({ ...a, _slug: filter }));
+  }
+
+  appts.sort((a, b) => b.id - a.id);
+
+  const body = document.getElementById('appt-table-body');
+  body.innerHTML = appts.map((a, i) => `
+    <tr>
+      <td style="color:var(--text3);">${i + 1}</td>
+      <td><span class="name-cell">${a.नाव || '-'}</span></td>
+      <td>${a.मोबाइल || '-'}</td>
+      <td>${a.ईमेल || '-'}</td>
+      <td>${a.वय || '-'}</td>
+      <td>${a.लिंग || '-'}</td>
+      <td><span class="badge cyan">${a.विभाग || '-'}</span></td>
+      <td>${a.डॉक्टर || '-'}</td>
+      <td>${a.तारीख || '-'}</td>
+      <td>${a.वेळ || '-'}</td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">${a.संदेश || '-'}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:24px;">अजून कोणत्याही अपॉइंटमेंट्स नाहीत</td></tr>';
+
+  window._exportAppts = appts;
+}
+
+function exportCSV() {
+  const appts = window._exportAppts || [];
+  if (!appts.length) return alert('Export करण्यासाठी data नाही');
+
+  const headers = ['नाव', 'मोबाइल', 'ईमेल', 'वय', 'लिंग', 'विभाग', 'डॉक्टर', 'तारीख', 'वेळ', 'संदेश', 'Client'];
+  const rows = appts.map(a => headers.map(h => `"${(a[h] || a['_slug'] || '').toString().replace(/"/g, '""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `appointments_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// SETTINGS FORM
+// ============================================================
+function loadSettingsForm() {
+  const c = getClient(currentSlug);
+  if (!c) return;
+  const s = c.settings;
+  document.getElementById('s-name').value = s.hospitalName || '';
+  document.getElementById('s-tagline').value = s.tagline || '';
+  document.getElementById('s-desc').value = s.description || '';
+  document.getElementById('s-address').value = s.address || '';
+  document.getElementById('s-phone').value = s.phone || '';
+  document.getElementById('s-emergency').value = s.emergencyNumber || '';
+  document.getElementById('s-email').value = s.email || '';
+  document.getElementById('s-timings').value = s.timings || '';
+}
+
+function saveSettings() {
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  c.settings.hospitalName = document.getElementById('s-name').value;
+  c.settings.tagline = document.getElementById('s-tagline').value;
+  c.settings.description = document.getElementById('s-desc').value;
+  c.settings.address = document.getElementById('s-address').value;
+  c.settings.phone = document.getElementById('s-phone').value;
+  c.settings.emergencyNumber = document.getElementById('s-emergency').value;
+  c.settings.email = document.getElementById('s-email').value;
+  c.settings.timings = document.getElementById('s-timings').value;
+  saveClient(currentSlug, c);
+  refreshClientSwitcher();
+  showAlert('settings-saved-alert');
+}
+
+// ============================================================
+// COLORS FORM
+// ============================================================
+function loadColorsForm() {
+  const c = getClient(currentSlug);
+  const colors = c?.settings?.colors || {};
+  document.getElementById('c-cyan').value = colors.accentCyan || '#00D4FF';
+  document.getElementById('c-blue').value = colors.accentBlue || '#3B82F6';
+  document.getElementById('c-purple').value = colors.accentPurple || '#A855F7';
+  document.getElementById('c-bg').value = colors.bgPrimary || '#020B18';
+  updateColorPreview();
+
+  ['c-cyan','c-blue','c-purple','c-bg'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateColorPreview);
+  });
+}
+
+function updateColorPreview() {
+  const cyan = document.getElementById('c-cyan').value;
+  const blue = document.getElementById('c-blue').value;
+  const bg = document.getElementById('c-bg').value;
+  const preview = document.getElementById('color-preview');
+  const btn = document.getElementById('preview-btn');
+  preview.style.background = bg;
+  btn.style.background = `linear-gradient(135deg, ${cyan}, ${blue})`;
+}
+
+function saveColors() {
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  c.settings.colors = {
+    accentCyan: document.getElementById('c-cyan').value,
+    accentBlue: document.getElementById('c-blue').value,
+    accentPurple: document.getElementById('c-purple').value,
+    bgPrimary: document.getElementById('c-bg').value
+  };
+  saveClient(currentSlug, c);
+  showAlert('colors-saved-alert');
+}
+
+function resetColors() {
+  document.getElementById('c-cyan').value = '#00D4FF';
+  document.getElementById('c-blue').value = '#3B82F6';
+  document.getElementById('c-purple').value = '#A855F7';
+  document.getElementById('c-bg').value = '#020B18';
+  updateColorPreview();
+}
+
+// ============================================================
+// SERVICES & DEPARTMENTS
+// ============================================================
+function loadServicesForm() {
+  const c = getClient(currentSlug);
+  const services = c?.services || DEFAULT_CLIENT.services;
+  const depts = c?.departments || DEFAULT_CLIENT.departments;
+
+  document.getElementById('services-list').innerHTML = services.map((s, i) => `
+    <div class="list-item">
+      <span class="item-icon">${s.icon}</span>
+      <div class="item-info">
+        <div class="item-name">${s.title}</div>
+        <div class="item-sub">${s.desc}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-danger btn-sm" onclick="removeService(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--text3);font-size:0.9rem;">कोणत्याही सेवा नाहीत</p>';
+
+  document.getElementById('depts-list').innerHTML = depts.map((d, i) => `
+    <div class="list-item">
+      <span class="item-icon">${d.icon}</span>
+      <div class="item-info"><div class="item-name">${d.name}</div></div>
+      <div class="item-actions">
+        <button class="btn-danger btn-sm" onclick="removeDept(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--text3);font-size:0.9rem;">कोणतेही विभाग नाहीत</p>';
+}
+
+function addService() {
+  const icon = document.getElementById('svc-icon').value || '🏥';
+  const title = document.getElementById('svc-title').value.trim();
+  const desc = document.getElementById('svc-desc').value.trim();
+  if (!title) return alert('सेवेचे नाव आवश्यक आहे!');
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  if (!c.services) c.services = [...DEFAULT_CLIENT.services];
+  c.services.push({ icon, title, desc });
+  saveClient(currentSlug, c);
+  closeModal('modal-add-service');
+  document.getElementById('svc-icon').value = '';
+  document.getElementById('svc-title').value = '';
+  document.getElementById('svc-desc').value = '';
+  loadServicesForm();
+}
+
+function removeService(idx) {
+  if (!confirm('ही सेवा delete करायची आहे का?')) return;
+  const c = getClient(currentSlug);
+  c.services.splice(idx, 1);
+  saveClient(currentSlug, c);
+  loadServicesForm();
+}
+
+function addDept() {
+  const icon = document.getElementById('dept-icon').value || '🏢';
+  const name = document.getElementById('dept-name').value.trim();
+  if (!name) return alert('विभागाचे नाव आवश्यक आहे!');
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  if (!c.departments) c.departments = [...DEFAULT_CLIENT.departments];
+  c.departments.push({ icon, name });
+  saveClient(currentSlug, c);
+  closeModal('modal-add-dept');
+  document.getElementById('dept-icon').value = '';
+  document.getElementById('dept-name').value = '';
+  loadServicesForm();
+}
+
+function removeDept(idx) {
+  if (!confirm('हा विभाग delete करायचा आहे का?')) return;
+  const c = getClient(currentSlug);
+  c.departments.splice(idx, 1);
+  saveClient(currentSlug, c);
+  loadServicesForm();
+}
+
+// ============================================================
+// DOCTORS
+// ============================================================
+function loadDoctorsForm() {
+  const c = getClient(currentSlug);
+  const doctors = c?.doctors || DEFAULT_CLIENT.doctors;
+  document.getElementById('doctors-admin-list').innerHTML = doctors.map((d, i) => `
+    <div class="list-item">
+      <span class="item-icon" style="font-size:28px;">${d.emoji}</span>
+      <div class="item-info">
+        <div class="item-name">${d.name}</div>
+        <div class="item-sub">${d.dept} | ${d.exp}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-danger btn-sm" onclick="removeDoctor(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--text3);font-size:0.9rem;">कोणतेही डॉक्टर नाहीत</p>';
+}
+
+function addDoctor() {
+  const emoji = document.getElementById('doc-emoji').value || '👨‍⚕️';
+  const name = document.getElementById('doc-name').value.trim();
+  const dept = document.getElementById('doc-dept').value.trim();
+  const exp = document.getElementById('doc-exp').value.trim();
+  if (!name) return alert('डॉक्टरचे नाव आवश्यक आहे!');
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  if (!c.doctors) c.doctors = [...DEFAULT_CLIENT.doctors];
+  c.doctors.push({ emoji, name, dept, exp });
+  saveClient(currentSlug, c);
+  closeModal('modal-add-doctor');
+  ['doc-emoji','doc-name','doc-dept','doc-exp'].forEach(id => document.getElementById(id).value = '');
+  loadDoctorsForm();
+}
+
+function removeDoctor(idx) {
+  if (!confirm('हा डॉक्टर delete करायचा आहे का?')) return;
+  const c = getClient(currentSlug);
+  c.doctors.splice(idx, 1);
+  saveClient(currentSlug, c);
+  loadDoctorsForm();
+}
+
+// ============================================================
+// FACILITIES
+// ============================================================
+function loadFacilitiesForm() {
+  const c = getClient(currentSlug);
+  const facilities = c?.facilities || DEFAULT_CLIENT.facilities;
+  document.getElementById('facilities-admin-list').innerHTML = facilities.map((f, i) => `
+    <div class="list-item">
+      <span class="item-icon">${f.icon}</span>
+      <div class="item-info">
+        <div class="item-name">${f.title}</div>
+        <div class="item-sub">${f.desc}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-danger btn-sm" onclick="removeFacility(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addFacility() {
+  const icon = document.getElementById('fac-icon').value || '🏥';
+  const title = document.getElementById('fac-title').value.trim();
+  const desc = document.getElementById('fac-desc').value.trim();
+  if (!title) return alert('सुविधेचे नाव आवश्यक आहे!');
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  if (!c.facilities) c.facilities = [...DEFAULT_CLIENT.facilities];
+  c.facilities.push({ icon, title, desc });
+  saveClient(currentSlug, c);
+  closeModal('modal-add-facility');
+  ['fac-icon','fac-title','fac-desc'].forEach(id => document.getElementById(id).value = '');
+  loadFacilitiesForm();
+}
+
+function removeFacility(idx) {
+  if (!confirm('ही सुविधा delete करायची आहे का?')) return;
+  const c = getClient(currentSlug);
+  c.facilities.splice(idx, 1);
+  saveClient(currentSlug, c);
+  loadFacilitiesForm();
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function loadStatsForm() {
+  const c = getClient(currentSlug);
+  const stats = c?.stats || DEFAULT_CLIENT.stats;
+  document.getElementById('stats-edit-form').innerHTML = stats.map((st, i) => `
+    <div class="form-row" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Stat ${i+1} - संख्या</label>
+        <input id="stat-num-${i}" value="${st.num}">
+      </div>
+      <div class="field">
+        <label>Stat ${i+1} - Label</label>
+        <input id="stat-lbl-${i}" value="${st.label}">
+      </div>
+    </div>
+  `).join('');
+  window._statsCount = stats.length;
+}
+
+function saveStats() {
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  c.stats = [];
+  for (let i = 0; i < (window._statsCount || 4); i++) {
+    const num = document.getElementById(`stat-num-${i}`)?.value;
+    const label = document.getElementById(`stat-lbl-${i}`)?.value;
+    if (num || label) c.stats.push({ num: num || '', label: label || '' });
+  }
+  saveClient(currentSlug, c);
+  showAlert('stats-saved-alert');
+}
+
+// ============================================================
+// INTEGRATION
+// ============================================================
+function loadIntegration() {
+  const c = getClient(currentSlug);
+  document.getElementById('webhook-url').value = c?.settings?.googleSheetWebhook || '';
+}
+
+function saveWebhook() {
+  const url = document.getElementById('webhook-url').value.trim();
+  const c = getClient(currentSlug) || JSON.parse(JSON.stringify(DEFAULT_CLIENT));
+  c.settings.googleSheetWebhook = url;
+  saveClient(currentSlug, c);
+  showAlert('webhook-saved-alert');
+}
+
+function testWebhook() {
+  const url = document.getElementById('webhook-url').value.trim();
+  if (!url) return alert('पहिले URL टाका!');
+  const testData = {
+    नाव: 'Test User', मोबाइल: '9999999999',
+    ईमेल: 'test@test.com', वय: '25', लिंग: 'पुरुष',
+    विभाग: 'Test Dept', डॉक्टर: 'Test Doctor',
+    तारीख: '2026-01-01', वेळ: 'सकाळी ९:०० ते १०:००',
+    संदेश: 'Admin test', वेळ_नोंद: new Date().toLocaleString('mr-IN'),
+    client: currentSlug
+  };
+  fetch(url, { method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(testData) })
+    .then(() => alert('✅ Test पाठवला! Google Sheet तपासा.'))
+    .catch(() => alert('⚠️ Request पाठवली. no-cors असल्याने response मिळणार नाही, पण Sheet तपासा.'));
+}
+
+// ============================================================
+// MODALS & UTILITIES
+// ============================================================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+function showAlert(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Responsive services grid
+function handleResize() {
+  const grid = document.querySelector('.services-depts-grid');
+  if (grid) grid.style.gridTemplateColumns = window.innerWidth < 768 ? '1fr' : '1fr 1fr';
+}
+window.addEventListener('resize', handleResize);
+handleResize();
+</script>
+</body>
+</html>
